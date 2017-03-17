@@ -24,7 +24,9 @@ fn sweep(py: Python, numpy: &PyObject, temp: f64, energy: Option<i32>) -> PyResu
 
     let mut state = State::from_pybuffer(py, &buffer, energy)?;
 
-    state.sweep(temp);
+    py.allow_threads(|| {
+        state.sweep(temp);
+    });
 
     state.copy_to_pybuffer(py, &buffer)?;
     Ok(state.get_energy())

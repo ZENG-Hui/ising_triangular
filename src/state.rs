@@ -23,16 +23,18 @@ impl State {
     }
 
     // constructeur à partir d'un PyBuffer
-    pub fn from_pybuffer(py: Python, buffer: &PyBuffer) -> PyResult<State> {
+    pub fn from_pybuffer(py: Python, buffer: &PyBuffer, energy: Option<i32>) -> PyResult<State> {
         if buffer.dimensions() != 2 {
             return Err(PyErr::new::<TypeError, _>(py, "Not rank 2"));;
         }
         let mut state = State {
             size: (buffer.shape()[0], buffer.shape()[1]),
             spins: buffer.to_vec(py)?,
-            energy: 0, // valeur invalide
+            energy: energy.unwrap_or(0),
         };
-        state.compute_energy(); // corrige l'énergie
+        if energy.is_none() {
+            state.compute_energy(); // corrige l'énergie
+        }
         Ok(state)
     }
 

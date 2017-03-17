@@ -14,25 +14,25 @@ py_module_initializer!(ising_triangular,
                        PyInit_ising_triangular,
                        |py, m| {
                            m.add(py, "__doc__", "This module is implemented in Rust.")?;
-                           m.add(py, "sweep", py_fn!(py, sweep(numpy: &PyObject, temp: f64)))?;
+                           m.add(py, "sweep", py_fn!(py, sweep(numpy: &PyObject, temp: f64, energy: Option<i32>)))?;
                            m.add(py, "energy", py_fn!(py, energy(numpy: &PyObject)))?;
                            Ok(())
                        });
 
-fn sweep(py: Python, numpy: &PyObject, temp: f64) -> PyResult<f64> {
+fn sweep(py: Python, numpy: &PyObject, temp: f64, energy: Option<i32>) -> PyResult<i32> {
     let buffer = PyBuffer::get(py, numpy)?;
 
-    let mut state = State::from_pybuffer(py, &buffer)?;
+    let mut state = State::from_pybuffer(py, &buffer, energy)?;
 
-    let accept_ratio = state.sweep(temp);
+    state.sweep(temp);
 
     state.copy_to_pybuffer(py, &buffer)?;
-    Ok(accept_ratio)
+    Ok(state.get_energy())
 }
 
 fn energy(py: Python, numpy: &PyObject) -> PyResult<i32> {
     let buffer = PyBuffer::get(py, numpy)?;
 
-    let state = State::from_pybuffer(py, &buffer)?;
+    let state = State::from_pybuffer(py, &buffer, None)?;
     Ok(state.get_energy())
 }

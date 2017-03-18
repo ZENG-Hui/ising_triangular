@@ -49,12 +49,6 @@ impl State {
         energy
     }
 
-    fn get_spin(&self, x: isize, y: isize) -> i32 {
-        let x = (x + self.size.1 as isize) as usize % self.size.1;
-        let y = (y + self.size.0 as isize) as usize % self.size.0;
-        self.spins[y * self.size.1 + x]
-    }
-
     pub fn sweep(&mut self, temp: f64, n: Option<usize>) -> i32 {
         let mut delta_energy = 0;
 
@@ -96,5 +90,11 @@ impl State {
         } else {
             0
         }
+    }
+
+    fn get_spin(&self, x: isize, y: isize) -> i32 {
+        let x = (x + self.size.1 as isize) as usize % self.size.1;
+        let y = (y + self.size.0 as isize) as usize % self.size.0;
+        self.spins[y * self.size.1 + x]
     }
 }

@@ -14,27 +14,26 @@ py_module_initializer!(ising_triangular,
                        PyInit_ising_triangular,
                        |py, m| {
                            m.add(py, "__doc__", "This module is implemented in Rust.")?;
-                           m.add(py, "sweep", py_fn!(py, sweep(numpy: &PyObject, temp: f64, energy: Option<i32>)))?;
+                           m.add(py, "sweep", py_fn!(py, sweep(numpy: &PyObject, temp: f64)))?;
                            m.add(py, "energy", py_fn!(py, energy(numpy: &PyObject)))?;
                            Ok(())
                        });
 
-fn sweep(py: Python, numpy: &PyObject, temp: f64, energy: Option<i32>) -> PyResult<i32> {
+fn sweep(py: Python, numpy: &PyObject, temp: f64) -> PyResult<i32> {
     let buffer = PyBuffer::get(py, numpy)?;
 
-    let mut state = State::from_pybuffer(py, &buffer, energy)?;
+    let mut state = State::from_pybuffer(py, &buffer)?;
 
-    py.allow_threads(|| {
-        state.sweep(temp);
-    });
+    let mut delta_energy = 0;
+    py.allow_threads(|| { delta_energy = state.sweep(temp); });
 
     state.copy_to_pybuffer(py, &buffer)?;
-    Ok(state.get_energy())
+    Ok(delta_energy)
 }
 
 fn energy(py: Python, numpy: &PyObject) -> PyResult<i32> {
     let buffer = PyBuffer::get(py, numpy)?;
 
-    let state = State::from_pybuffer(py, &buffer, None)?;
-    Ok(state.get_energy())
+    let state = State::from_pybuffer(py, &buffer)?;
+    Ok(state.compute_energy())
 }

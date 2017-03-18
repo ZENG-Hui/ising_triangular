@@ -55,15 +55,14 @@ impl State {
         self.spins[y * self.size.1 + x]
     }
 
-    pub fn sweep(&mut self, temp: f64) -> i32 {
+    pub fn sweep(&mut self, temp: f64, n: Option<usize>) -> i32 {
         let mut delta_energy = 0;
 
         // energy_new - energy_old = -12, -8, -4, 0, 4, 8, 12
         let probas =
             [1.0, 1.0, 1.0, 1.0, (-4.0 / temp).exp(), (-8.0 / temp).exp(), (-12.0 / temp).exp()];
 
-
-        for _ in 0..self.spins.len() {
+        for _ in 0..n.unwrap_or(self.spins.len()) {
             delta_energy += self.try_flip(&probas);
         }
         delta_energy

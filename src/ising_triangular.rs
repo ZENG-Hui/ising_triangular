@@ -13,11 +13,14 @@ py_module_initializer!(ising_triangular,
                        initising_triangular,
                        PyInit_ising_triangular,
                        |py, m| {
-                           m.add(py, "__doc__", "This module is implemented in Rust.")?;
-                           m.add(py, "sweep", py_fn!(py, sweep(numpy: &PyObject, temp: f64, n_flips: Option<usize> = None)))?;
-                           m.add(py, "energy", py_fn!(py, energy(numpy: &PyObject)))?;
-                           Ok(())
-                       });
+    m.add(py, "__doc__", "This module is implemented in Rust.")?;
+    m.add(py,
+             "sweep",
+             py_fn!(py,
+                    sweep(numpy: &PyObject, temp: f64, n_flips: Option<usize> = None)))?;
+    m.add(py, "energy", py_fn!(py, energy(numpy: &PyObject)))?;
+    Ok(())
+});
 
 fn sweep(py: Python, numpy: &PyObject, temp: f64, n_flips: Option<usize>) -> PyResult<i32> {
     let buffer = PyBuffer::get(py, numpy)?;

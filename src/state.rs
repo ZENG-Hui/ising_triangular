@@ -68,10 +68,10 @@ impl State {
         let x = Range::new(0isize, self.size.1 as isize).ind_sample(&mut rng);
         let y = Range::new(0isize, self.size.0 as isize).ind_sample(&mut rng);
 
+        let x_ = x + 2 * (y % 2) - 1; // x of diagonal neighbor
         let nei = self.get_spin(x + 1, y) + self.get_spin(x - 1, y) + self.get_spin(x, y + 1) +
                   self.get_spin(x, y - 1) +
-                  self.get_spin(x + 2 * (y % 2) - 1, y + 1) +
-                  self.get_spin(x + 2 * (y % 2) - 1, y - 1);
+                  self.get_spin(x_, y + 1) + self.get_spin(x_, y - 1);
 
         // energy = - sum s_i s_j
         // d_e = energy_new - energy_old
@@ -83,7 +83,7 @@ impl State {
         // d_e / 4 + 3 = 0, 1, 2, 3, 4, 5, 6
 
         if rng.next_f64() < probas[(d_e / 4 + 3) as usize] {
-            let i = y as usize * self.size.1 + x as usize;
+            let i: usize = y as usize * self.size.1 + x as usize;
             self.spins[i] = -self.spins[i];
             // energy_new = energy_old + d_e
             d_e
@@ -93,8 +93,8 @@ impl State {
     }
 
     fn get_spin(&self, x: isize, y: isize) -> i32 {
-        let x = (x + self.size.1 as isize) as usize % self.size.1;
-        let y = (y + self.size.0 as isize) as usize % self.size.0;
+        let x: usize = (x + self.size.1 as isize) as usize % self.size.1;
+        let y: usize = (y + self.size.0 as isize) as usize % self.size.0;
         self.spins[y * self.size.1 + x]
     }
 }

@@ -5,6 +5,7 @@ use cpython::{Python, PyResult, PyErr};
 use cpython::exc::TypeError;
 use cpython::buffer::PyBuffer;
 
+// A State contains the spins and the size of the lattice
 pub struct State {
     size: (usize, usize),
     spins: Vec<i32>,
@@ -12,7 +13,7 @@ pub struct State {
 
 #[allow(dead_code)]
 impl State {
-    // constructeur avec tous les spins up
+    // constructor of a new State with all spins up
     pub fn all_up(h: usize, w: usize) -> State {
         State {
             size: (h, w),
@@ -20,7 +21,7 @@ impl State {
         }
     }
 
-    // constructeur à partir d'un PyBuffer
+    // constructor of a new State from a PyBuffer
     pub fn from_pybuffer(py: Python, buffer: &PyBuffer) -> PyResult<State> {
         if buffer.dimensions() != 2 {
             return Err(PyErr::new::<TypeError, _>(py, "Not rank 2"));;

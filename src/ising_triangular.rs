@@ -9,6 +9,7 @@ use cpython::buffer::PyBuffer;
 mod state;
 use state::State;
 
+// defines the python module
 py_module_initializer!(ising_triangular,
                        initising_triangular,
                        PyInit_ising_triangular,
